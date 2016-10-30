@@ -67,6 +67,10 @@ class MetasploitModule < Msf::Post
       lhost = framework.datastore['LHOST']
     else
       lhost = session.tunnel_local.split(':')[0]
+      if lhost == 'Local Pipe'
+        print_error 'LHOST is "Local Pipe", please manually set the correct IP.'
+        return
+      end
     end
 
     # If nothing else works...
@@ -197,7 +201,7 @@ class MetasploitModule < Msf::Post
       #:nodelete => true # keep temp files (for debugging)
     }
     if session.platform =~ /win/i
-      opts[:decoder] = File.join(Msf::Config.data_directory, 'exploits', 'cmdstager', 'vbs_b64')
+      opts[:decoder] = File.join(Rex::Exploitation::DATA_DIR, "exploits", "cmdstager", 'vbs_b64')
       cmdstager = Rex::Exploitation::CmdStagerVBS.new(exe)
     else
       opts[:background] = true
